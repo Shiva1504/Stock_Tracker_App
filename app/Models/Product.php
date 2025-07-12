@@ -31,4 +31,14 @@ class Product extends Model
     {
         return $this->stock->where('in_stock', true)->count();
     }
+
+    public function priceAlerts()
+    {
+        return $this->hasMany(PriceAlert::class);
+    }
+
+    public function getLowestPriceAttribute()
+    {
+        return $this->stock->where('in_stock', true)->min('price') ?? 0;
+    }
 }

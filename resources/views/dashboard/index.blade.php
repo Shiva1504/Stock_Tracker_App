@@ -5,16 +5,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Stock Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
+
 </head>
 <body class="bg-gray-100">
     <div class="container mx-auto px-4 py-8">
+        @if(session('success'))
+            <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <p class="text-green-700">{{ session('success') }}</p>
+            </div>
+        @endif
+
+
+
         <div class="flex items-center justify-between mb-8">
             <h1 class="text-3xl font-bold text-gray-900">Stock Tracker Dashboard</h1>
-            <div class="flex gap-4">
+            <div class="flex gap-4 items-center">
                 <a href="/products" class="text-blue-500 hover:text-blue-600">Manage Products</a>
                 <a href="/retailers" class="text-blue-500 hover:text-blue-600">Manage Retailers</a>
+                <!-- Notification Bell -->
+                <div class="relative" id="notificationContainer">
+                    <button class="relative focus:outline-none" id="notificationBell">
+                        <svg class="w-7 h-7 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        @if($notifications->count() > 0)
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1.5">{{ $notifications->count() }}</span>
+                        @endif
+                    </button>
+                    <!-- Dropdown -->
+                    <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-96 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+                        <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+                            <span class="font-semibold text-gray-800">Notifications ({{ $notifications->count() }})</span>
+                            @if($notifications->count() > 0)
+                                <form method="POST" action="/notifications/mark-all-read">
+                                    @csrf
+                                    <button type="submit" class="text-xs text-blue-500 hover:underline" onclick="return confirm('This will mark notifications as read and deactivate the related price alerts. Continue?')">Mark all as read & deactivate alerts</button>
+                                </form>
+                            @endif
+                        </div>
+                        <div class="divide-y divide-gray-100">
+                            @forelse($notifications as $notification)
+                                <div class="p-4 hover:bg-orange-50">
+                                    <div class="font-medium text-gray-900">{{ $notification->data['product_name'] ?? 'Product' }} price dropped!</div>
+                                    <div class="text-sm text-gray-700 mt-1">
+                                        Target: <span class="font-semibold">₹{{ number_format($notification->data['target_price'] ?? 0, 2) }}</span><br>
+                                        Current: <span class="font-semibold">₹{{ number_format($notification->data['current_price'] ?? 0, 2) }}</span>
+                                        @if(isset($notification->data['retailer_name']))
+                                            <br>At: <span class="font-medium text-blue-600">{{ $notification->data['retailer_name'] }}</span>
+                                        @endif
+                                    </div>
+                                    <div class="flex items-center justify-between mt-2">
+                                        <div class="text-xs text-gray-400">{{ $notification->created_at->diffForHumans() }}</div>
+                                        @if(isset($notification->data['product_url']) && $notification->data['product_url'])
+                                            <a href="{{ $notification->data['product_url'] }}" target="_blank" class="text-xs text-blue-500 hover:text-blue-700 hover:underline">
+                                                View Product →
+                                            </a>
+                                        @endif
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="p-4 text-gray-500 text-center">No new notifications</div>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+
+
 
         <!-- Statistics Cards Row 1 -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -182,8 +240,16 @@
                 <a href="/bulk-update" class="px-6 py-3 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors">
                     <i class="fas fa-edit mr-2"></i>Bulk Update Stock
                 </a>
-                <a href="/export" class="px-6 py-3 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors">
-                    <i class="fas fa-download mr-2"></i>Export Data
+                <a href="/export" class="px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors">
+                    <i class="fas fa-download text-2xl mb-2"></i>
+                    <h3 class="font-semibold">Export Data</h3>
+                    <p class="text-sm opacity-90">Export stock data, history & logs</p>
+                </a>
+
+                <a href="/price-alerts" class="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
+                    <i class="fas fa-bell text-2xl mb-2"></i>
+                    <h3 class="font-semibold">Price Alerts</h3>
+                    <p class="text-sm opacity-90">Set alerts for price drops</p>
                 </a>
             </div>
         </div>
@@ -233,5 +299,38 @@
             @endif
         </div>
     </div>
+
+    <script>
+        // Notification dropdown functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const notificationBell = document.getElementById('notificationBell');
+            const notificationDropdown = document.getElementById('notificationDropdown');
+            
+            if (notificationBell && notificationDropdown) {
+                // Toggle dropdown on bell click
+                notificationBell.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    notificationDropdown.classList.toggle('hidden');
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!notificationBell.contains(e.target) && !notificationDropdown.contains(e.target)) {
+                        notificationDropdown.classList.add('hidden');
+                    }
+                });
+                
+                // Close dropdown when clicking on dropdown content (optional)
+                notificationDropdown.addEventListener('click', function(e) {
+                    if (e.target.tagName === 'BUTTON' && e.target.textContent.includes('Mark all as read')) {
+                        // Keep dropdown open for a moment to show the action
+                        setTimeout(() => {
+                            notificationDropdown.classList.add('hidden');
+                        }, 500);
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html> 

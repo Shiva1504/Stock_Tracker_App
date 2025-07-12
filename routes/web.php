@@ -7,7 +7,9 @@ use App\Http\Controllers\StockStatusController;
 use App\Http\Controllers\StockHistoryController;
 use App\Http\Controllers\BulkUpdateController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\PriceAlertController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\NotificationController;
 
 Route::get('/', [DashboardController::class, 'index']);
 Route::get('/products', [ProductController::class, 'index']);
@@ -29,22 +31,30 @@ Route::get('/stock/{stock}/edit', [RetailerController::class, 'editStock']);
 Route::put('/stock/{stock}', [RetailerController::class, 'updateStock']);
 Route::delete('/stock/{stock}', [RetailerController::class, 'deleteStock']);
 
-// Enhanced Stock Status routes
+// Stock status routes
 Route::get('/stock-status', [StockStatusController::class, 'index']);
 Route::post('/stock-status/check', [StockStatusController::class, 'checkStock']);
 
-// Stock History routes
+// Stock history routes
 Route::get('/stock-history', [StockHistoryController::class, 'index']);
 Route::get('/stock-history/{stock}', [StockHistoryController::class, 'show']);
 
-// Bulk Update routes
+// Bulk update routes
 Route::get('/bulk-update', [BulkUpdateController::class, 'index']);
 Route::post('/bulk-update', [BulkUpdateController::class, 'update']);
 Route::get('/bulk-update/stocks', [BulkUpdateController::class, 'getStocks']);
 
 // Export routes
 Route::get('/export', [ExportController::class, 'index']);
-Route::post('/export/csv', [ExportController::class, 'exportCsv']);
-Route::post('/export/excel', [ExportController::class, 'exportExcel']);
-Route::post('/export/stock-history', [ExportController::class, 'exportStockHistory']);
-Route::post('/export/activity-log', [ExportController::class, 'exportActivityLog']);
+Route::post('/export/stock', [ExportController::class, 'exportStock']);
+Route::post('/export/history', [ExportController::class, 'exportHistory']);
+Route::post('/export/activity', [ExportController::class, 'exportActivity']);
+
+// Price alerts routes
+Route::get('/price-alerts', [PriceAlertController::class, 'index']);
+Route::post('/price-alerts', [PriceAlertController::class, 'store']);
+Route::put('/price-alerts/{priceAlert}', [PriceAlertController::class, 'update']);
+Route::delete('/price-alerts/{priceAlert}', [PriceAlertController::class, 'destroy']);
+Route::patch('/price-alerts/{priceAlert}/toggle', [PriceAlertController::class, 'toggle']);
+
+Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead']);

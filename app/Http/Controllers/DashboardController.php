@@ -46,6 +46,10 @@ class DashboardController extends Controller
 
         $recentActivity = ActivityLog::with('user')->latest()->take(10)->get();
 
-        return view('dashboard.index', compact('stats', 'recentProducts', 'productsWithStock', 'productsOutOfStock', 'recentActivity'));
+        // Get notifications for the current user (default user if not authenticated)
+        $user = auth()->user() ?? \App\Models\User::first();
+        $notifications = $user ? $user->unreadNotifications()->take(10)->get() : collect();
+
+        return view('dashboard.index', compact('stats', 'recentProducts', 'productsWithStock', 'productsOutOfStock', 'recentActivity', 'notifications'));
     }
 }

@@ -66,7 +66,7 @@ class RetailerController extends Controller
         ]);
 
         ActivityLog::create([
-            'user_id' => auth()->id(),
+            'user_id' => auth()->id() ?? 1,
             'action' => 'created',
             'subject_type' => 'Retailer',
             'subject_id' => $retailer->id,
@@ -92,7 +92,7 @@ class RetailerController extends Controller
         ]);
 
         ActivityLog::create([
-            'user_id' => auth()->id(),
+            'user_id' => auth()->id() ?? 1,
             'action' => 'updated',
             'subject_type' => 'Retailer',
             'subject_id' => $retailer->id,
@@ -109,7 +109,7 @@ class RetailerController extends Controller
         $retailer->delete();
         
         ActivityLog::create([
-            'user_id' => auth()->id(),
+            'user_id' => auth()->id() ?? 1,
             'action' => 'deleted',
             'subject_type' => 'Retailer',
             'subject_id' => $retailerId,
@@ -143,15 +143,23 @@ class RetailerController extends Controller
         // Record initial history
         $stock->recordHistory();
 
+        // Check price alerts for this product after adding stock
+        $alertsTriggered = $this->checkPriceAlertsForProduct($stock->product_id);
+
         ActivityLog::create([
-            'user_id' => auth()->id(),
+            'user_id' => auth()->id() ?? 1,
             'action' => 'created',
             'subject_type' => 'Stock',
             'subject_id' => $stock->id,
             'description' => 'Added stock for product ID ' . $stock->product_id . ' at retailer ID ' . $stock->retailer_id,
         ]);
 
-        return redirect('/retailers')->with('success', 'Stock added successfully!');
+        $message = 'Stock added successfully!';
+        if ($alertsTriggered > 0) {
+            $message .= " {$alertsTriggered} price alert(s) triggered.";
+        }
+
+        return redirect('/retailers')->with('success', $message);
     }
 
     public function editStock(Stock $stock)
@@ -183,15 +191,23 @@ class RetailerController extends Controller
         // Record history after update
         $stock->recordHistory();
 
+        // Check price alerts for this product after updating stock
+        $alertsTriggered = $this->checkPriceAlertsForProduct($stock->product_id);
+
         ActivityLog::create([
-            'user_id' => auth()->id(),
+            'user_id' => auth()->id() ?? 1,
             'action' => 'updated',
             'subject_type' => 'Stock',
             'subject_id' => $stock->id,
             'description' => 'Updated stock for product ID ' . $stock->product_id . ' at retailer ID ' . $stock->retailer_id,
         ]);
 
-        return redirect('/retailers')->with('success', 'Stock updated successfully!');
+        $message = 'Stock updated successfully!';
+        if ($alertsTriggered > 0) {
+            $message .= " {$alertsTriggered} price alert(s) triggered.";
+        }
+
+        return redirect('/retailers')->with('success', $message);
     }
 
     public function deleteStock(Stock $stock)
@@ -201,14 +217,79 @@ class RetailerController extends Controller
         $retailerId = $stock->retailer_id;
         $stock->delete();
         
+        // Check price alerts for this product after deleting stock
+        $alertsTriggered = $this->checkPriceAlertsForProduct($productId);
+        
         ActivityLog::create([
-            'user_id' => auth()->id(),
+            'user_id' => auth()->id() ?? 1,
             'action' => 'deleted',
             'subject_type' => 'Stock',
             'subject_id' => $stockId,
             'description' => 'Deleted stock for product ID ' . $productId . ' at retailer ID ' . $retailerId,
         ]);
         
-        return redirect('/retailers')->with('success', 'Stock deleted successfully!');
+        $message = 'Stock deleted successfully!';
+        if ($alertsTriggered > 0) {
+            $message .= " {$alertsTriggered} price alert(s) triggered.";
+        }
+        
+        return redirect('/retailers')->with('success', $message);
+    }
+
+    /**
+     * Check price alerts for a specific product and trigger notifications if needed
+     * @return int Number of alerts triggered
+     */
+    private function checkPriceAlertsForProduct($productId)
+    {
+        $product = \App\Models\Product::find($productId);
+        if (!$product) {
+            return 0;
+        }
+
+        // Get all active price alerts for this product
+        $activeAlerts = \App\Models\PriceAlert::where('product_id', $productId)
+            ->where('is_active', true)
+            ->get();
+
+        if ($activeAlerts->isEmpty()) {
+            return 0;
+        }
+
+        // Get the lowest current price for this product
+        $lowestPrice = $product->stock
+            ->where('in_stock', true)
+            ->min('price') ?? 0;
+
+        if ($lowestPrice === 0) {
+            return 0; // No stock available
+        }
+
+        $currentPriceInRupees = $lowestPrice / 100;
+        $triggeredCount = 0;
+
+        foreach ($activeAlerts as $alert) {
+            // Check if alert should be triggered
+            if ($alert->shouldTrigger($lowestPrice)) {
+                // Trigger the alert
+                $alert->trigger();
+                
+                // Send notification to user
+                $alert->user->notify(new \App\Notifications\PriceDropAlert($alert, $currentPriceInRupees));
+                
+                // Log the trigger
+                \Log::info("Price alert triggered after stock change for {$product->name}", [
+                    'user_id' => $alert->user_id,
+                    'product_id' => $product->id,
+                    'target_price' => $alert->target_price_in_rupees,
+                    'current_price' => $currentPriceInRupees,
+                    'trigger_type' => 'stock_change',
+                ]);
+                
+                $triggeredCount++;
+            }
+        }
+        
+        return $triggeredCount;
     }
 }

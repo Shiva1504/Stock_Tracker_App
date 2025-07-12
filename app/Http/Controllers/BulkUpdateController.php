@@ -141,7 +141,7 @@ class BulkUpdateController extends Controller
 
                 // Log activity
                 ActivityLog::create([
-                    'user_id' => auth()->id(),
+                    'user_id' => auth()->id() ?? 1,
                     'action' => 'bulk_updated',
                     'subject_type' => 'Stock',
                     'subject_id' => $stock->id,

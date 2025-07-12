@@ -32,7 +32,7 @@ class ProductController extends Controller
         ]);
 
         ActivityLog::create([
-            'user_id' => auth()->id(),
+            'user_id' => auth()->id() ?? 1,
             'action' => 'created',
             'subject_type' => 'Product',
             'subject_id' => $product->id,
@@ -58,7 +58,7 @@ class ProductController extends Controller
         ]);
 
         ActivityLog::create([
-            'user_id' => auth()->id(),
+            'user_id' => auth()->id() ?? 1,
             'action' => 'updated',
             'subject_type' => 'Product',
             'subject_id' => $product->id,
@@ -73,9 +73,9 @@ class ProductController extends Controller
         $productName = $product->name;
         $productId = $product->id;
         $product->delete();
-
+        
         ActivityLog::create([
-            'user_id' => auth()->id(),
+            'user_id' => auth()->id() ?? 1,
             'action' => 'deleted',
             'subject_type' => 'Product',
             'subject_id' => $productId,
