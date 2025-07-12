@@ -16,8 +16,8 @@
             </div>
         </div>
 
-        <!-- Statistics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+        <!-- Statistics Cards Row 1 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div class="bg-white rounded-lg shadow-md p-6">
                 <div class="flex items-center">
                     <div class="p-2 bg-blue-100 rounded-lg">
@@ -31,7 +31,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="bg-white rounded-lg shadow-md p-6">
                 <div class="flex items-center">
                     <div class="p-2 bg-green-100 rounded-lg">
@@ -45,7 +44,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="bg-white rounded-lg shadow-md p-6">
                 <div class="flex items-center">
                     <div class="p-2 bg-purple-100 rounded-lg">
@@ -59,21 +57,6 @@
                     </div>
                 </div>
             </div>
-
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <div class="flex items-center">
-                    <div class="p-2 bg-green-100 rounded-lg">
-                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">In Stock</p>
-                        <p class="text-2xl font-bold text-green-600">{{ $stats['in_stock_count'] }}</p>
-                    </div>
-                </div>
-            </div>
-
             <div class="bg-white rounded-lg shadow-md p-6">
                 <div class="flex items-center">
                     <div class="p-2 bg-red-100 rounded-lg">
@@ -82,17 +65,21 @@
                         </svg>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Out of Stock</p>
+                        <p class="text-sm font-medium text-gray-600">Stock Entries Out of Stock</p>
                         <p class="text-2xl font-bold text-red-600">{{ $stats['out_of_stock_count'] }}</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Product Status Cards Row 2 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
             <!-- Products In Stock -->
             <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-xl font-semibold mb-4 text-green-600">Products In Stock</h2>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold text-green-600">Products In Stock</h2>
+                    <span class="inline-block bg-green-100 text-green-700 text-sm font-bold px-3 py-1 rounded-full border border-green-300">{{ $productsWithStock->count() }}</span>
+                </div>
                 @if($productsWithStock->count() > 0)
                     <div class="space-y-3">
                         @foreach($productsWithStock as $product)
@@ -117,7 +104,10 @@
 
             <!-- Products Out of Stock -->
             <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-xl font-semibold mb-4 text-red-600">Products Out of Stock</h2>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold text-red-600">Products Out of Stock</h2>
+                    <span class="inline-block bg-red-100 text-red-700 text-sm font-bold px-3 py-1 rounded-full border border-red-300">{{ $productsOutOfStock->count() }}</span>
+                </div>
                 @if($productsOutOfStock->count() > 0)
                     <div class="space-y-3">
                         @foreach($productsOutOfStock as $product)
@@ -125,10 +115,14 @@
                                 <div>
                                     <h3 class="font-medium text-gray-900">{{ $product->name }}</h3>
                                     <p class="text-sm text-gray-500">
-                                        @foreach($product->stock->where('in_stock', false) as $stock)
-                                            {{ $stock->retailer->name }} (₹{{ number_format($stock->price / 100, 2) }})
-                                            @if(!$loop->last), @endif
-                                        @endforeach
+                                        @if($product->stock->count() === 0)
+                                            <span class="italic text-gray-400">No stock entries</span>
+                                        @else
+                                            @foreach($product->stock->where('in_stock', false) as $stock)
+                                                {{ $stock->retailer->name }} (₹{{ number_format($stock->price / 100, 2) }})
+                                                @if(!$loop->last), @endif
+                                            @endforeach
+                                        @endif
                                     </p>
                                 </div>
                                 <span class="text-red-600 text-sm font-medium">❌ Out of Stock</span>

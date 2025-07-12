@@ -140,17 +140,13 @@
                             <div class="flex-1">
                                 <h3 class="font-medium text-gray-900">{{ $product->name }}</h3>
                                 <div class="flex items-center gap-4 mt-1">
-                                    <p class="text-sm text-gray-500">
+                                    <span class="text-sm px-2 py-1 rounded font-medium {{ $product->inStock() ? 'bg-green-100 text-green-700 border border-green-300' : 'bg-red-100 text-red-700 border border-red-300' }}">
                                         @if($product->inStock())
-                                            <span class="text-green-600">
-                                                <i class="fas fa-check-circle mr-1"></i>In Stock
-                                            </span>
+                                            <i class="fas fa-check-circle mr-1"></i>In Stock
                                         @else
-                                            <span class="text-red-600">
-                                                <i class="fas fa-times-circle mr-1"></i>Out of Stock
-                                            </span>
+                                            <i class="fas fa-times-circle mr-1"></i>Out of Stock
                                         @endif
-                                    </p>
+                                    </span>
                                     <p class="text-sm text-gray-500">
                                         <i class="fas fa-store mr-1"></i>{{ $product->stock->count() }} retailer(s)
                                     </p>

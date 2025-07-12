@@ -16,7 +16,8 @@ class DashboardController extends Controller
             'total_retailers' => Retailer::count(),
             'total_stock_entries' => Stock::count(),
             'in_stock_count' => Stock::where('in_stock', true)->count(),
-            'out_of_stock_count' => Stock::where('in_stock', false)->count(),
+            'out_of_stock_count' => Stock::where('in_stock', false)->count(), // stock entries out of stock
+            'products_out_of_stock_count' => 0, // placeholder, will set below
         ];
 
         $recentProducts = Product::with('stock.retailer')
@@ -39,6 +40,8 @@ class DashboardController extends Controller
             $query->where('in_stock', true);
         })
         ->get();
+
+        $stats['products_out_of_stock_count'] = $productsOutOfStock->count();
 
         return view('dashboard.index', compact('stats', 'recentProducts', 'productsWithStock', 'productsOutOfStock'));
     }

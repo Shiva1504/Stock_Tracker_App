@@ -377,14 +377,12 @@
                         <p class="text-sm text-gray-500">₹${(stock.price / 100).toFixed(2)}</p>
                     </div>
                     <div class="text-right">
-                        <span class="px-3 py-1 rounded-full text-xs font-medium ${stock.in_stock ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                        <a href="${stock.url}" target="_blank" class="text-blue-500 hover:text-blue-600 text-sm">
+                            <i class="fas fa-external-link-alt mr-1"></i>View
+                        </a>
+                        <span class="ml-2 px-2 py-1 rounded text-sm font-medium ${stock.in_stock ? 'bg-green-100 text-green-700 border border-green-300' : 'bg-red-100 text-red-700 border border-red-300'}">
                             ${stock.in_stock ? 'In Stock' : 'Out of Stock'}
                         </span>
-                        <div class="mt-2">
-                            <a href="${stock.url}" target="_blank" class="text-blue-500 hover:text-blue-600 text-sm">
-                                <i class="fas fa-external-link-alt mr-1"></i>View
-                            </a>
-                        </div>
                     </div>
                 </div>
             `).join('');

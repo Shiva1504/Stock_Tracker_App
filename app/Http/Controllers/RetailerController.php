@@ -99,14 +99,16 @@ class RetailerController extends Controller
             'price' => 'required|numeric|min:0',
             'url' => 'required|url',
             'sku' => 'nullable|string',
-            'in_stock' => 'required|boolean'
+            // 'in_stock' => 'required|boolean' // Remove required, handle default below
         ]);
+
+        $inStock = $request->has('in_stock') ? (bool)$request->in_stock : false;
 
         $stock = new Stock([
             'price' => $request->price * 100, // Store in paise (INR cents)
             'url' => $request->url,
             'sku' => $request->sku,
-            'in_stock' => $request->in_stock
+            'in_stock' => $inStock
         ]);
 
         $retailer->addStock(Product::find($request->product_id), $stock);
@@ -127,15 +129,17 @@ class RetailerController extends Controller
             'price' => 'required|numeric|min:0',
             'url' => 'required|url',
             'sku' => 'nullable|string',
-            'in_stock' => 'required|boolean'
+            // 'in_stock' => 'required|boolean' // Remove required, handle default below
         ]);
+
+        $inStock = $request->has('in_stock') ? (bool)$request->in_stock : false;
 
         $stock->update([
             'product_id' => $request->product_id,
             'price' => $request->price * 100, // Store in paise (INR cents)
             'url' => $request->url,
             'sku' => $request->sku,
-            'in_stock' => $request->in_stock
+            'in_stock' => $inStock
         ]);
 
         return redirect('/retailers')->with('success', 'Stock updated successfully!');
