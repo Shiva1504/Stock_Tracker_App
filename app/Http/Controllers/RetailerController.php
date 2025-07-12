@@ -124,7 +124,7 @@ class RetailerController extends Controller
         $request->validate([
             'product_id' => 'required|exists:products,id',
             'price' => 'required|numeric|min:0',
-            'url' => 'required|url',
+            'url' => 'nullable|url',
             'sku' => 'nullable|string',
             // 'in_stock' => 'required|boolean' // Remove required, handle default below
         ]);
@@ -165,7 +165,7 @@ class RetailerController extends Controller
         $request->validate([
             'product_id' => 'required|exists:products,id',
             'price' => 'required|numeric|min:0',
-            'url' => 'required|url',
+            'url' => 'nullable|url',
             'sku' => 'nullable|string',
             // 'in_stock' => 'required|boolean' // Remove required, handle default below
         ]);

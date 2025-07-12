@@ -52,15 +52,16 @@
                     </div>
 
                     <div class="md:col-span-2">
-                        <label for="url" class="block text-sm font-medium text-gray-700 mb-2">Product URL</label>
+                        <label for="url" class="block text-sm font-medium text-gray-700 mb-2">Product URL (Optional for Physical Products)</label>
                         <input 
                             type="url" 
                             id="url"
                             name="url" 
                             value="{{ old('url', $stock->url) }}"
+                            placeholder="https://example.com/product or leave empty for physical products"
                             class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
                         >
+                        <p class="text-sm text-gray-500 mt-1">For physical products, you can use retailer's main website or leave empty</p>
                         @error('url')
                             <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
                         @enderror
@@ -120,7 +121,13 @@
                     <p><strong>Product:</strong> {{ $stock->product->name }}</p>
                     <p><strong>Retailer:</strong> {{ $stock->retailer->name }}</p>
                     <p><strong>Price:</strong> ₹{{ number_format($stock->price / 100, 2) }}</p>
-                    <p><strong>URL:</strong> <a href="{{ $stock->url }}" target="_blank" class="text-blue-500 hover:text-blue-600">{{ $stock->url }}</a></p>
+                    <p><strong>URL:</strong> 
+                        @if($stock->hasUrl())
+                            <a href="{{ $stock->url }}" target="_blank" class="text-blue-500 hover:text-blue-600">{{ $stock->url }}</a>
+                        @else
+                            <span class="text-gray-500">No URL available</span>
+                        @endif
+                    </p>
                     @if($stock->sku)
                         <p><strong>SKU:</strong> {{ $stock->sku }}</p>
                     @endif

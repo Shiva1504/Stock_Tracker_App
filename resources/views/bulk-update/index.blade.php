@@ -130,10 +130,11 @@
 
                     <!-- URL Update -->
                     <div id="urlField" class="hidden">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">New URL</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">New URL (Optional for Physical Products)</label>
                         <input type="url" name="new_value" 
-                               placeholder="https://example.com/product"
+                               placeholder="https://example.com/product or retailer website"
                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <p class="text-sm text-gray-500 mt-1">For physical products, you can use retailer's main website or leave empty</p>
                     </div>
                 </div>
 

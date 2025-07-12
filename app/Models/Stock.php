@@ -41,4 +41,14 @@ class Stock extends Model
             'changed_at' => now(),
         ]);
     }
+
+    public function getDisplayUrlAttribute()
+    {
+        return $this->url ?: 'No URL available';
+    }
+
+    public function hasUrl()
+    {
+        return !empty($this->url);
+    }
 }

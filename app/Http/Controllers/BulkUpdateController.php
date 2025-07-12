@@ -67,6 +67,13 @@ class BulkUpdateController extends Controller
             'new_status' => 'required_if:update_type,status|boolean',
         ]);
 
+        // Additional validation for URL format when updating URL
+        if ($request->update_type === 'url' && $request->filled('new_value')) {
+            $request->validate([
+                'new_value' => 'url'
+            ]);
+        }
+
         // Additional validation for percentage
         if ($request->update_type === 'percentage') {
             $percentage = (float)$request->new_value;
