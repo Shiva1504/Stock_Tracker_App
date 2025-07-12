@@ -127,7 +127,7 @@
                                     <h4 class="font-medium text-gray-700">Current Stock:</h4>
                                     @foreach($retailer->stock as $stock)
                                         <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                            <div>
+                                            <div class="flex-1">
                                                 <p class="font-medium">{{ $stock->product->name }}</p>
                                                 <p class="text-sm text-gray-500">
                                                     ₹{{ number_format($stock->price / 100, 2) }}
@@ -136,26 +136,24 @@
                                                     <p class="text-xs text-gray-400">SKU: {{ $stock->sku }}</p>
                                                 @endif
                                             </div>
-                                            <div class="text-right">
+                                            <div class="flex items-center gap-3">
                                                 <a href="{{ $stock->url }}" target="_blank" class="text-blue-500 hover:text-blue-600 text-sm">View</a>
                                                 <p class="text-sm {{ $stock->in_stock ? 'text-green-600' : 'text-red-600' }}">
                                                     {{ $stock->in_stock ? 'In Stock' : 'Out of Stock' }}
                                                 </p>
-                                                <div class="flex gap-1 mt-2">
-                                                    <a href="/stock/{{ $stock->id }}/edit" 
-                                                       class="px-2 py-1 bg-yellow-500 text-white rounded text-xs hover:bg-yellow-600">
-                                                        Edit
-                                                    </a>
-                                                    <form action="/stock/{{ $stock->id }}" method="POST" class="inline" 
-                                                          onsubmit="return confirm('Are you sure you want to delete this stock entry?')">
-                                                          @csrf
-                                                          @method('DELETE')
-                                                          <button type="submit" 
-                                                                  class="px-2 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600">
-                                                              Delete
-                                                          </button>
-                                                      </form>
-                                                  </div>
+                                                <a href="/stock/{{ $stock->id }}/edit" 
+                                                   class="px-2 py-1 bg-yellow-500 text-white rounded text-xs hover:bg-yellow-600">
+                                                    Edit
+                                                </a>
+                                                <form action="/stock/{{ $stock->id }}" method="POST" class="inline" 
+                                                      onsubmit="return confirm('Are you sure you want to delete this stock entry?')">
+                                                      @csrf
+                                                      @method('DELETE')
+                                                      <button type="submit" 
+                                                              class="px-2 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600">
+                                                          Delete
+                                                      </button>
+                                                  </form>
                                             </div>
                                         </div>
                                     @endforeach
