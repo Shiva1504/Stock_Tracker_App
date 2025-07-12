@@ -8,7 +8,10 @@
 </head>
 <body class="bg-gray-100">
     <div class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold text-gray-900 mb-8">Stock Tracker</h1>
+        <div class="flex items-center justify-between mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Stock Tracker</h1>
+            <a href="/retailers" class="text-blue-500 hover:text-blue-600">Manage Retailers →</a>
+        </div>
         
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
             <h2 class="text-xl font-semibold mb-4">Add Product</h2>
