@@ -176,6 +176,9 @@
                 <a href="/stock-status" class="px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors">
                     <i class="fas fa-chart-line mr-2"></i>Advanced Stock Analysis
                 </a>
+                <a href="/stock-history" class="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
+                    <i class="fas fa-history mr-2"></i>Stock History & Trends
+                </a>
             </div>
         </div>
 

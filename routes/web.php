@@ -4,6 +4,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RetailerController;
 use App\Http\Controllers\StockStatusController;
+use App\Http\Controllers\StockHistoryController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [DashboardController::class, 'index']);
@@ -29,3 +30,7 @@ Route::delete('/stock/{stock}', [RetailerController::class, 'deleteStock']);
 // Enhanced Stock Status routes
 Route::get('/stock-status', [StockStatusController::class, 'index']);
 Route::post('/stock-status/check', [StockStatusController::class, 'checkStock']);
+
+// Stock History routes
+Route::get('/stock-history', [StockHistoryController::class, 'index']);
+Route::get('/stock-history/{stock}', [StockHistoryController::class, 'show']);

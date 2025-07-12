@@ -140,6 +140,9 @@ class RetailerController extends Controller
 
         $retailer->addStock(Product::find($request->product_id), $stock);
 
+        // Record initial history
+        $stock->recordHistory();
+
         ActivityLog::create([
             'user_id' => auth()->id(),
             'action' => 'created',
@@ -176,6 +179,9 @@ class RetailerController extends Controller
             'sku' => $request->sku,
             'in_stock' => $inStock
         ]);
+
+        // Record history after update
+        $stock->recordHistory();
 
         ActivityLog::create([
             'user_id' => auth()->id(),

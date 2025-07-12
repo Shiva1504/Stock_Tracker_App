@@ -27,4 +27,18 @@ class Stock extends Model
     {
         return $this->belongsTo(Retailer::class);
     }
+
+    public function history()
+    {
+        return $this->hasMany(StockHistory::class);
+    }
+
+    public function recordHistory()
+    {
+        $this->history()->create([
+            'price' => $this->price,
+            'in_stock' => $this->in_stock,
+            'changed_at' => now(),
+        ]);
+    }
 }
