@@ -3,14 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Tracker</title>
+    <title>Products - Stock Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100">
     <div class="container mx-auto px-4 py-8">
         <div class="flex items-center justify-between mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">Stock Tracker</h1>
-            <a href="/retailers" class="text-blue-500 hover:text-blue-600">Manage Retailers →</a>
+            <h1 class="text-3xl font-bold text-gray-900">Products</h1>
+            <div class="flex gap-4">
+                <a href="/" class="text-blue-500 hover:text-blue-600">← Dashboard</a>
+                <a href="/retailers" class="text-blue-500 hover:text-blue-600">Manage Retailers →</a>
+            </div>
         </div>
         
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
