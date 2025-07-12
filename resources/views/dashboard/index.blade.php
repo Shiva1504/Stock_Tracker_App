@@ -182,6 +182,9 @@
                 <a href="/bulk-update" class="px-6 py-3 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors">
                     <i class="fas fa-edit mr-2"></i>Bulk Update Stock
                 </a>
+                <a href="/export" class="px-6 py-3 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors">
+                    <i class="fas fa-download mr-2"></i>Export Data
+                </a>
             </div>
         </div>
 

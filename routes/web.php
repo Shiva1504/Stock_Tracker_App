@@ -6,6 +6,7 @@ use App\Http\Controllers\RetailerController;
 use App\Http\Controllers\StockStatusController;
 use App\Http\Controllers\StockHistoryController;
 use App\Http\Controllers\BulkUpdateController;
+use App\Http\Controllers\ExportController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [DashboardController::class, 'index']);
@@ -40,3 +41,10 @@ Route::get('/stock-history/{stock}', [StockHistoryController::class, 'show']);
 Route::get('/bulk-update', [BulkUpdateController::class, 'index']);
 Route::post('/bulk-update', [BulkUpdateController::class, 'update']);
 Route::get('/bulk-update/stocks', [BulkUpdateController::class, 'getStocks']);
+
+// Export routes
+Route::get('/export', [ExportController::class, 'index']);
+Route::post('/export/csv', [ExportController::class, 'exportCsv']);
+Route::post('/export/excel', [ExportController::class, 'exportExcel']);
+Route::post('/export/stock-history', [ExportController::class, 'exportStockHistory']);
+Route::post('/export/activity-log', [ExportController::class, 'exportActivityLog']);
