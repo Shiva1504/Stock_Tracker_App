@@ -30,6 +30,31 @@ class RetailerController extends Controller
         return redirect('/retailers');
     }
 
+    public function edit(Retailer $retailer)
+    {
+        return view('retailers.edit', compact('retailer'));
+    }
+
+    public function update(Request $request, Retailer $retailer)
+    {
+        $request->validate([
+            'name' => 'required|unique:retailers,name,' . $retailer->id
+        ]);
+
+        $retailer->update([
+            'name' => $request->name
+        ]);
+
+        return redirect('/retailers')->with('success', 'Retailer updated successfully!');
+    }
+
+    public function destroy(Retailer $retailer)
+    {
+        $retailer->delete();
+        
+        return redirect('/retailers')->with('success', 'Retailer deleted successfully!');
+    }
+
     public function addStock(Request $request, Retailer $retailer)
     {
         $request->validate([

@@ -15,6 +15,12 @@
                 <a href="/retailers" class="text-blue-500 hover:text-blue-600">Manage Retailers →</a>
             </div>
         </div>
+
+        @if(session('success'))
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+                {{ session('success') }}
+            </div>
+        @endif
         
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
             <h2 class="text-xl font-semibold mb-4">Add Product</h2>
@@ -56,6 +62,21 @@
                                         <span class="text-red-600">Out of Stock</span>
                                     @endif
                                 </p>
+                            </div>
+                            <div class="flex gap-2">
+                                <a href="/products/{{ $product->id }}/edit" 
+                                   class="px-3 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 text-sm">
+                                    Edit
+                                </a>
+                                <form action="/products/{{ $product->id }}" method="POST" class="inline" 
+                                      onsubmit="return confirm('Are you sure you want to delete this product?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" 
+                                            class="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 text-sm">
+                                        Delete
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     @endforeach

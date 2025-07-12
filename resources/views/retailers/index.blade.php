@@ -13,6 +13,12 @@
             <a href="/" class="text-blue-500 hover:text-blue-600">← Back to Products</a>
         </div>
         
+        @if(session('success'))
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+                {{ session('success') }}
+            </div>
+        @endif
+        
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
             <h2 class="text-xl font-semibold mb-4">Add Retailer</h2>
             <form action="/retailers" method="POST">
@@ -44,7 +50,24 @@
                 <div class="space-y-6">
                     @foreach($retailers as $retailer)
                         <div class="border border-gray-200 rounded-lg p-6">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ $retailer->name }}</h3>
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-medium text-gray-900">{{ $retailer->name }}</h3>
+                                <div class="flex gap-2">
+                                    <a href="/retailers/{{ $retailer->id }}/edit" 
+                                       class="px-3 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 text-sm">
+                                        Edit
+                                    </a>
+                                    <form action="/retailers/{{ $retailer->id }}" method="POST" class="inline" 
+                                          onsubmit="return confirm('Are you sure you want to delete this retailer? This will also delete all associated stock.')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" 
+                                                class="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 text-sm">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
                             
                             <!-- Add Stock Form -->
                             <form action="/retailers/{{ $retailer->id }}/stock" method="POST" class="mb-4 p-4 bg-gray-50 rounded-lg">
