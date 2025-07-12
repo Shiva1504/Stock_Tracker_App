@@ -74,6 +74,40 @@ class RetailerController extends Controller
 
         $retailer->addStock(Product::find($request->product_id), $stock);
 
-        return redirect('/retailers');
+        return redirect('/retailers')->with('success', 'Stock added successfully!');
+    }
+
+    public function editStock(Stock $stock)
+    {
+        $products = Product::all();
+        return view('retailers.edit-stock', compact('stock', 'products'));
+    }
+
+    public function updateStock(Request $request, Stock $stock)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'price' => 'required|numeric|min:0',
+            'url' => 'required|url',
+            'sku' => 'nullable|string',
+            'in_stock' => 'required|boolean'
+        ]);
+
+        $stock->update([
+            'product_id' => $request->product_id,
+            'price' => $request->price * 100, // Store in paise (INR cents)
+            'url' => $request->url,
+            'sku' => $request->sku,
+            'in_stock' => $request->in_stock
+        ]);
+
+        return redirect('/retailers')->with('success', 'Stock updated successfully!');
+    }
+
+    public function deleteStock(Stock $stock)
+    {
+        $stock->delete();
+        
+        return redirect('/retailers')->with('success', 'Stock deleted successfully!');
     }
 }

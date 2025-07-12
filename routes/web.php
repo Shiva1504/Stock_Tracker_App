@@ -18,3 +18,8 @@ Route::get('/retailers/{retailer}/edit', [RetailerController::class, 'edit']);
 Route::put('/retailers/{retailer}', [RetailerController::class, 'update']);
 Route::delete('/retailers/{retailer}', [RetailerController::class, 'destroy']);
 Route::post('/retailers/{retailer}/stock', [RetailerController::class, 'addStock']);
+
+// Stock management routes
+Route::get('/stock/{stock}/edit', [RetailerController::class, 'editStock']);
+Route::put('/stock/{stock}', [RetailerController::class, 'updateStock']);
+Route::delete('/stock/{stock}', [RetailerController::class, 'deleteStock']);
