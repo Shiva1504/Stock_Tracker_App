@@ -25,7 +25,7 @@
                 <div class="ml-3">
                     <h3 class="text-sm font-medium text-blue-800">Stock History Tracking</h3>
                     <div class="mt-2 text-sm text-blue-700">
-                        <p>Stock history is automatically tracked when you add or update stock entries. Use the filters below to view specific trends, or click "History" on any stock entry to see detailed timeline.</p>
+                        <p>Stock history is automatically tracked when you add, edit, or update stock entries. Only real operations are recorded - no sample data is generated. Use the filters below to view specific trends, or click "History" on any stock entry to see detailed timeline.</p>
                     </div>
                 </div>
             </div>
