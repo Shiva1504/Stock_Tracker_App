@@ -298,7 +298,6 @@
 
             const formData = new FormData(this);
             const stockIds = Array.from(selectedCheckboxes).map(cb => cb.value);
-            formData.set('stock_ids', JSON.stringify(stockIds));
 
             // Show loading state
             const btn = document.getElementById('bulkUpdateBtn');
@@ -309,20 +308,55 @@
             btnText.classList.add('hidden');
             btnLoading.classList.remove('hidden');
 
+            // Create form data with proper array format
+            const postData = new FormData();
+            stockIds.forEach(id => {
+                postData.append('stock_ids[]', id);
+            });
+            postData.append('update_type', formData.get('update_type'));
+            postData.append('new_status', formData.get('new_status'));
+
+            // Only get the visible and enabled new_value input
+            let newValue = '';
+            const updateType = formData.get('update_type');
+            if (updateType === 'price') {
+                newValue = document.querySelector('#priceField input[name="new_value"]')?.value;
+            } else if (updateType === 'percentage') {
+                newValue = document.querySelector('#percentageField input[name="new_value"]')?.value;
+            } else if (updateType === 'url') {
+                newValue = document.querySelector('#urlField input[name="new_value"]')?.value;
+            }
+            if (updateType !== 'status') {
+                if (!newValue || newValue.trim() === '') {
+                    alert('Please enter a value for the selected update type.');
+                    btn.disabled = false;
+                    btnText.classList.remove('hidden');
+                    btnLoading.classList.add('hidden');
+                    return;
+                }
+                postData.append('new_value', newValue);
+            }
+
             fetch('/bulk-update', {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    // Do not set 'Content-Type' when using FormData
                 },
-                body: JSON.stringify({
-                    stock_ids: stockIds,
-                    update_type: formData.get('update_type'),
-                    new_value: formData.get('new_value'),
-                    new_status: formData.get('new_status')
-                })
+                body: postData
             })
-            .then(response => response.json())
+            .then(response => {
+                // Check if response is JSON
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    return response.json();
+                } else {
+                    // If not JSON, get the text and log it
+                    return response.text().then(text => {
+                        throw new Error('Server returned non-JSON response');
+                    });
+                }
+            })
             .then(data => {
                 if (data.success) {
                     alert(data.message);

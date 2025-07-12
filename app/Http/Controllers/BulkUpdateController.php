@@ -50,6 +50,15 @@ class BulkUpdateController extends Controller
 
     public function update(Request $request)
     {
+        // Debug logging
+        \Log::info('Bulk update request received', [
+            'all_data' => $request->all(),
+            'stock_ids' => $request->stock_ids,
+            'update_type' => $request->update_type,
+            'new_value' => $request->new_value,
+            'new_status' => $request->new_status,
+        ]);
+
         $request->validate([
             'stock_ids' => 'required|array|min:1',
             'stock_ids.*' => 'exists:stock,id',
@@ -57,6 +66,17 @@ class BulkUpdateController extends Controller
             'new_value' => 'required_unless:update_type,status',
             'new_status' => 'required_if:update_type,status|boolean',
         ]);
+
+        // Additional validation for percentage
+        if ($request->update_type === 'percentage') {
+            $percentage = (float)$request->new_value;
+            if ($percentage < -100) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Percentage cannot be less than -100%',
+                ], 422);
+            }
+        }
 
         $stockIds = $request->stock_ids;
         $updateType = $request->update_type;
@@ -88,8 +108,20 @@ class BulkUpdateController extends Controller
 
                     case 'percentage':
                         $percentage = (float)$request->new_value;
+                        
+                        // Validate percentage value
+                        if ($percentage < -100) {
+                            throw new \Exception('Percentage cannot be less than -100%');
+                        }
+                        
                         $newPrice = $stock->price * (1 + $percentage / 100);
-                        $stock->update(['price' => (int)$newPrice]);
+                        
+                        // Ensure price doesn't go below 0
+                        if ($newPrice < 0) {
+                            $newPrice = 0;
+                        }
+                        
+                        $stock->update(['price' => round($newPrice)]);
                         break;
 
                     case 'url':
@@ -122,6 +154,13 @@ class BulkUpdateController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
+            
+            \Log::error('Bulk update error: ' . $e->getMessage(), [
+                'stock_ids' => $stockIds,
+                'update_type' => $updateType,
+                'new_value' => $request->new_value,
+                'trace' => $e->getTraceAsString()
+            ]);
             
             return response()->json([
                 'success' => false,
