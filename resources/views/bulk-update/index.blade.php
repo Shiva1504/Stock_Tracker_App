@@ -76,6 +76,11 @@
                         Apply Filters
                     </button>
                 </div>
+                <div class="flex items-end">
+                    <a href="/bulk-update" class="w-full px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 text-center">
+                        Clear Filters
+                    </a>
+                </div>
             </form>
         </div>
 
