@@ -42,6 +42,7 @@ class StockStatusController extends Controller
         $retailerId = $request->input('retailer_id');
         $priceRange = $request->input('price_range');
         $stockStatus = $request->input('stock_status');
+        $search = $request->input('search');
 
         $query = Stock::with(['product', 'retailer']);
 
@@ -59,6 +60,19 @@ class StockStatusController extends Controller
 
         if ($priceRange) {
             $this->applyPriceFilter($query, $priceRange);
+        }
+
+        // Search functionality
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->whereHas('product', function($subQ) use ($search) {
+                    $subQ->where('name', 'like', "%{$search}%");
+                })
+                ->orWhereHas('retailer', function($subQ) use ($search) {
+                    $subQ->where('name', 'like', "%{$search}%");
+                })
+                ->orWhere('sku', 'like', "%{$search}%");
+            });
         }
 
         $results = $query->get();

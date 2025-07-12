@@ -7,11 +7,15 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::all();
+        $search = $request->input('search');
         
-        return view('products.index', compact('products'));
+        $products = Product::when($search, function($query) use ($search) {
+            $query->where('name', 'like', '%' . $search . '%');
+        })->get();
+        
+        return view('products.index', compact('products', 'search'));
     }
 
     public function store(Request $request)
@@ -24,7 +28,7 @@ class ProductController extends Controller
             'name' => $request->name
         ]);
 
-        return redirect('/products');
+        return redirect('/products')->with('success', 'Product added successfully!');
     }
 
     public function edit(Product $product)
@@ -50,5 +54,20 @@ class ProductController extends Controller
         $product->delete();
         
         return redirect('/products')->with('success', 'Product deleted successfully!');
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+        
+        $products = Product::when($search, function($query) use ($search) {
+            $query->where('name', 'like', '%' . $search . '%');
+        })->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $products,
+            'count' => $products->count()
+        ]);
     }
 }

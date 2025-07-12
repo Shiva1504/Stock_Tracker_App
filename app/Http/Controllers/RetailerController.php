@@ -9,9 +9,46 @@ use Illuminate\Http\Request;
 
 class RetailerController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $retailers = Retailer::all();
+        $query = Retailer::query();
+        
+        // Search functionality
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhereHas('stock.product', function($subQ) use ($search) {
+                      $subQ->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+        
+        // Filter by stock status
+        if ($request->filled('stock_status')) {
+            $status = $request->stock_status;
+            if ($status === 'in_stock') {
+                $query->whereHas('stock', function($q) {
+                    $q->where('in_stock', true);
+                });
+            } elseif ($status === 'out_of_stock') {
+                $query->whereHas('stock', function($q) {
+                    $q->where('in_stock', false);
+                });
+            }
+        }
+        
+        // Sorting
+        $sortBy = $request->get('sort_by', 'name');
+        $sortOrder = $request->get('sort_order', 'asc');
+        
+        if ($sortBy === 'stock_count') {
+            $query->withCount('stock')->orderBy('stock_count', $sortOrder);
+        } else {
+            $query->orderBy($sortBy, $sortOrder);
+        }
+        
+        $retailers = $query->get();
         $products = Product::all();
         
         return view('retailers.index', compact('retailers', 'products'));
