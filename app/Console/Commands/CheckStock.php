@@ -77,7 +77,7 @@ class CheckStock extends Command
 
         foreach ($product->stock as $stock) {
             $status = $stock->in_stock ? '✅' : '❌';
-            $price = '$' . number_format($stock->price / 100, 2);
+            $price = '₹' . number_format($stock->price / 100, 2);
             $this->line("    {$status} {$stock->retailer->name} - {$price}");
         }
     }

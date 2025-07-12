@@ -59,7 +59,7 @@
                                     <input 
                                         type="number" 
                                         name="price" 
-                                        placeholder="Price ($)" 
+                                        placeholder="Price (₹)" 
                                         step="0.01"
                                         class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         required
@@ -106,7 +106,9 @@
                                         <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                                             <div>
                                                 <p class="font-medium">{{ $stock->product->name }}</p>
-                                                <p class="text-sm text-gray-500">${{ number_format($stock->price / 100, 2) }}</p>
+                                                <p class="text-sm text-gray-500">
+                                                    ₹{{ number_format($stock->price / 100, 2) }}
+                                                </p>
                                                 @if($stock->sku)
                                                     <p class="text-xs text-gray-400">SKU: {{ $stock->sku }}</p>
                                                 @endif

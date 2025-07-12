@@ -41,7 +41,7 @@ class RetailerController extends Controller
         ]);
 
         $stock = new Stock([
-            'price' => $request->price * 100, // Store in cents
+            'price' => $request->price * 100, // Store in paise (INR cents)
             'url' => $request->url,
             'sku' => $request->sku,
             'in_stock' => $request->in_stock

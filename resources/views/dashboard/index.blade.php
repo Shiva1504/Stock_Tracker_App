@@ -101,7 +101,7 @@
                                     <h3 class="font-medium text-gray-900">{{ $product->name }}</h3>
                                     <p class="text-sm text-gray-500">
                                         @foreach($product->stock->where('in_stock', true) as $stock)
-                                            {{ $stock->retailer->name }} (${{ number_format($stock->price / 100, 2) }})
+                                            {{ $stock->retailer->name }} (₹{{ number_format($stock->price / 100, 2) }})
                                             @if(!$loop->last), @endif
                                         @endforeach
                                     </p>
@@ -126,7 +126,7 @@
                                     <h3 class="font-medium text-gray-900">{{ $product->name }}</h3>
                                     <p class="text-sm text-gray-500">
                                         @foreach($product->stock->where('in_stock', false) as $stock)
-                                            {{ $stock->retailer->name }}
+                                            {{ $stock->retailer->name }} (₹{{ number_format($stock->price / 100, 2) }})
                                             @if(!$loop->last), @endif
                                         @endforeach
                                     </p>

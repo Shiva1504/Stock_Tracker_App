@@ -36,7 +36,7 @@ class ProductBackInStock extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $price = '$' . number_format($this->stock->price / 100, 2);
+        $price = '₹' . number_format($this->stock->price / 100, 2);
         
         return (new MailMessage)
             ->subject("🎉 {$this->product->name} is back in stock!")
