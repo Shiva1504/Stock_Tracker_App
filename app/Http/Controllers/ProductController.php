@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Models\ActivityLog;
 
 class ProductController extends Controller
 {
@@ -25,9 +26,17 @@ class ProductController extends Controller
             'low_stock_threshold' => 'required|integer|min:1',
         ]);
 
-        Product::create([
+        $product = Product::create([
             'name' => $request->name,
             'low_stock_threshold' => $request->low_stock_threshold,
+        ]);
+
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'created',
+            'subject_type' => 'Product',
+            'subject_id' => $product->id,
+            'description' => 'Created product: ' . $product->name,
         ]);
 
         return redirect('/products')->with('success', 'Product added successfully!');
@@ -48,12 +57,30 @@ class ProductController extends Controller
             'name' => $request->name
         ]);
 
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'updated',
+            'subject_type' => 'Product',
+            'subject_id' => $product->id,
+            'description' => 'Updated product: ' . $product->name,
+        ]);
+
         return redirect('/products')->with('success', 'Product updated successfully!');
     }
 
     public function destroy(Product $product)
     {
+        $productName = $product->name;
+        $productId = $product->id;
         $product->delete();
+
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'deleted',
+            'subject_type' => 'Product',
+            'subject_id' => $productId,
+            'description' => 'Deleted product: ' . $productName,
+        ]);
         
         return redirect('/products')->with('success', 'Product deleted successfully!');
     }

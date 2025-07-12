@@ -178,6 +178,51 @@
                 </a>
             </div>
         </div>
+
+        <!-- Recent Activity Feed -->
+        <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold mb-4">Recent Activity Feed</h2>
+            @if($recentActivity->count() > 0)
+                <ul class="divide-y divide-gray-200">
+                    @foreach($recentActivity as $activity)
+                        <li class="py-4 flex items-start gap-4">
+                            <div class="flex-shrink-0">
+                                @if($activity->action === 'created')
+                                    <span class="inline-block p-2 bg-green-100 text-green-600 rounded-full">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                    </span>
+                                @elseif($activity->action === 'updated')
+                                    <span class="inline-block p-2 bg-yellow-100 text-yellow-600 rounded-full">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v16h16V4H4zm4 4h8v8H8V8z"></path></svg>
+                                    </span>
+                                @elseif($activity->action === 'deleted')
+                                    <span class="inline-block p-2 bg-red-100 text-red-600 rounded-full">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                    </span>
+                                @else
+                                    <span class="inline-block p-2 bg-gray-100 text-gray-600 rounded-full">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+                                    </span>
+                                @endif
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-semibold text-gray-900">{{ $activity->user ? $activity->user->name : 'System' }}</span>
+                                    <span class="text-xs text-gray-400">{{ $activity->created_at->diffForHumans() }}</span>
+                                </div>
+                                <div class="mt-1 text-sm text-gray-700">
+                                    <span class="font-medium capitalize">{{ $activity->action }}</span>
+                                    <span class="text-gray-500">{{ $activity->subject_type }} #{{ $activity->subject_id }}</span>
+                                    <span class="block text-gray-500">{{ $activity->description }}</span>
+                                </div>
+                            </div>
+                        </li>
+                    @endforeach
+                </ul>
+            @else
+                <p class="text-gray-500">No recent activity yet.</p>
+            @endif
+        </div>
     </div>
 </body>
 </html> 

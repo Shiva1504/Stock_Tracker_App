@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\Retailer;
 use App\Models\Stock;
 use Illuminate\Http\Request;
+use App\Models\ActivityLog;
 
 class RetailerController extends Controller
 {
@@ -60,8 +61,16 @@ class RetailerController extends Controller
             'name' => 'required|unique:retailers,name'
         ]);
 
-        Retailer::create([
+        $retailer = Retailer::create([
             'name' => $request->name
+        ]);
+
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'created',
+            'subject_type' => 'Retailer',
+            'subject_id' => $retailer->id,
+            'description' => 'Created retailer: ' . $retailer->name,
         ]);
 
         return redirect('/retailers');
@@ -82,12 +91,30 @@ class RetailerController extends Controller
             'name' => $request->name
         ]);
 
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'updated',
+            'subject_type' => 'Retailer',
+            'subject_id' => $retailer->id,
+            'description' => 'Updated retailer: ' . $retailer->name,
+        ]);
+
         return redirect('/retailers')->with('success', 'Retailer updated successfully!');
     }
 
     public function destroy(Retailer $retailer)
     {
+        $retailerName = $retailer->name;
+        $retailerId = $retailer->id;
         $retailer->delete();
+        
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'deleted',
+            'subject_type' => 'Retailer',
+            'subject_id' => $retailerId,
+            'description' => 'Deleted retailer: ' . $retailerName,
+        ]);
         
         return redirect('/retailers')->with('success', 'Retailer deleted successfully!');
     }
@@ -112,6 +139,14 @@ class RetailerController extends Controller
         ]);
 
         $retailer->addStock(Product::find($request->product_id), $stock);
+
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'created',
+            'subject_type' => 'Stock',
+            'subject_id' => $stock->id,
+            'description' => 'Added stock for product ID ' . $stock->product_id . ' at retailer ID ' . $stock->retailer_id,
+        ]);
 
         return redirect('/retailers')->with('success', 'Stock added successfully!');
     }
@@ -142,12 +177,31 @@ class RetailerController extends Controller
             'in_stock' => $inStock
         ]);
 
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'updated',
+            'subject_type' => 'Stock',
+            'subject_id' => $stock->id,
+            'description' => 'Updated stock for product ID ' . $stock->product_id . ' at retailer ID ' . $stock->retailer_id,
+        ]);
+
         return redirect('/retailers')->with('success', 'Stock updated successfully!');
     }
 
     public function deleteStock(Stock $stock)
     {
+        $stockId = $stock->id;
+        $productId = $stock->product_id;
+        $retailerId = $stock->retailer_id;
         $stock->delete();
+        
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'deleted',
+            'subject_type' => 'Stock',
+            'subject_id' => $stockId,
+            'description' => 'Deleted stock for product ID ' . $productId . ' at retailer ID ' . $retailerId,
+        ]);
         
         return redirect('/retailers')->with('success', 'Stock deleted successfully!');
     }

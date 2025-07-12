@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\Retailer;
 use App\Models\Stock;
 use Illuminate\Http\Request;
+use App\Models\ActivityLog;
 
 class DashboardController extends Controller
 {
@@ -43,6 +44,8 @@ class DashboardController extends Controller
 
         $stats['products_out_of_stock_count'] = $productsOutOfStock->count();
 
-        return view('dashboard.index', compact('stats', 'recentProducts', 'productsWithStock', 'productsOutOfStock'));
+        $recentActivity = ActivityLog::with('user')->latest()->take(10)->get();
+
+        return view('dashboard.index', compact('stats', 'recentProducts', 'productsWithStock', 'productsOutOfStock', 'recentActivity'));
     }
 }
