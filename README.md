@@ -1,61 +1,176 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Stock Tracker App
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Laravel-based application for tracking product stock across multiple retailers. Built following the [Laracasts In-Stock-Tracker](https://github.com/laracasts/In-Stock-Tracker) tutorial.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### ✅ Core Functionality
+- **Product Management**: Add and manage products to track
+- **Retailer Management**: Add and manage retailers
+- **Stock Tracking**: Track stock status, prices, and URLs for each product at each retailer
+- **Stock Status Checking**: Check if products are in stock or out of stock
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### ✅ Web Interface
+- **Dashboard**: Comprehensive overview with statistics and quick actions
+- **Product Management**: Add and view products with stock status
+- **Retailer Management**: Add retailers and track their inventory
+- **Responsive Design**: Modern UI built with Tailwind CSS
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### ✅ Automation & Notifications
+- **Automated Stock Checking**: Background jobs to check stock status
+- **Email Notifications**: Get notified when products come back in stock
+- **Web Scraping**: Automatically check retailer websites for stock status
+- **Command Line Tools**: Manual stock checking and job dispatching
 
-## Learning Laravel
+### ✅ Data Management
+- **Database Migrations**: Proper database structure for products, retailers, and stock
+- **Eloquent Relationships**: Clean model relationships and queries
+- **Validation**: Form validation and data integrity checks
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Installation
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+1. **Clone the repository**
+   ```bash
+   git clone <your-repo-url>
+   cd Stock_Tracker_App
+   ```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+2. **Install dependencies**
+   ```bash
+   composer install
+   npm install
+   ```
 
-## Laravel Sponsors
+3. **Environment setup**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+4. **Database setup**
+   ```bash
+   php artisan migrate
+   ```
 
-### Premium Partners
+5. **Start the development server**
+   ```bash
+   php artisan serve
+   ```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Usage
+
+### Web Interface
+
+1. **Dashboard** (`/`): Overview of all products, retailers, and stock status
+2. **Products** (`/products`): Add and manage products
+3. **Retailers** (`/retailers`): Add retailers and track their inventory
+
+### Command Line Tools
+
+#### Check Stock Status
+```bash
+# Check all products
+php artisan stock:check
+
+# Check specific product
+php artisan stock:check "Product Name"
+```
+
+#### Dispatch Stock Check Job
+```bash
+# Manually trigger stock checking
+php artisan stock:dispatch-check
+```
+
+### Adding Products and Stock
+
+1. **Add a Product**:
+   - Go to `/products`
+   - Enter product name and click "Add Product"
+
+2. **Add a Retailer**:
+   - Go to `/retailers`
+   - Enter retailer name and click "Add Retailer"
+
+3. **Add Stock Information**:
+   - On the retailers page, select a product
+   - Enter price, URL, SKU (optional), and stock status
+   - Click "Add Stock"
+
+## Database Structure
+
+### Products Table
+- `id` - Primary key
+- `name` - Product name (unique)
+- `created_at`, `updated_at` - Timestamps
+
+### Retailers Table
+- `id` - Primary key
+- `name` - Retailer name (unique)
+- `created_at`, `updated_at` - Timestamps
+
+### Stock Table
+- `id` - Primary key
+- `product_id` - Foreign key to products
+- `retailer_id` - Foreign key to retailers
+- `price` - Price in cents (integer)
+- `url` - Product URL
+- `sku` - Stock keeping unit (optional)
+- `in_stock` - Boolean stock status
+- `created_at`, `updated_at` - Timestamps
+
+## Features in Detail
+
+### Stock Status Checking
+The application can automatically check stock status by:
+- Making HTTP requests to product URLs
+- Parsing response content for stock indicators
+- Updating database with current status
+- Sending notifications when products come back in stock
+
+### Notification System
+When a product comes back in stock:
+- Email notifications are sent to all users
+- Includes product name, retailer, price, and direct link
+- Uses Laravel's notification system
+
+### Web Scraping Logic
+The stock checking job looks for common indicators:
+- **Out of Stock**: "out of stock", "sold out", "unavailable", "backorder"
+- **In Stock**: "add to cart", "buy now", "in stock", "available"
+
+## Development
+
+### Running Tests
+```bash
+php artisan test
+```
+
+### Database Seeding
+```bash
+php artisan db:seed
+```
+
+### Queue Processing
+For background job processing:
+```bash
+php artisan queue:work
+```
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Acknowledgments
+
+- Built following the [Laracasts In-Stock-Tracker](https://github.com/laracasts/In-Stock-Tracker) tutorial
+- Uses Laravel 11 framework
+- Styled with Tailwind CSS
