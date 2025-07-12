@@ -179,6 +179,9 @@
                 <a href="/stock-history" class="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
                     <i class="fas fa-history mr-2"></i>Stock History & Trends
                 </a>
+                <a href="/bulk-update" class="px-6 py-3 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors">
+                    <i class="fas fa-edit mr-2"></i>Bulk Update Stock
+                </a>
             </div>
         </div>
 

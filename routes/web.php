@@ -5,6 +5,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RetailerController;
 use App\Http\Controllers\StockStatusController;
 use App\Http\Controllers\StockHistoryController;
+use App\Http\Controllers\BulkUpdateController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [DashboardController::class, 'index']);
@@ -34,3 +35,8 @@ Route::post('/stock-status/check', [StockStatusController::class, 'checkStock'])
 // Stock History routes
 Route::get('/stock-history', [StockHistoryController::class, 'index']);
 Route::get('/stock-history/{stock}', [StockHistoryController::class, 'show']);
+
+// Bulk Update routes
+Route::get('/bulk-update', [BulkUpdateController::class, 'index']);
+Route::post('/bulk-update', [BulkUpdateController::class, 'update']);
+Route::get('/bulk-update/stocks', [BulkUpdateController::class, 'getStocks']);
