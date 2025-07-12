@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RetailerController;
+use App\Http\Controllers\StockStatusController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [DashboardController::class, 'index']);
@@ -23,3 +24,7 @@ Route::post('/retailers/{retailer}/stock', [RetailerController::class, 'addStock
 Route::get('/stock/{stock}/edit', [RetailerController::class, 'editStock']);
 Route::put('/stock/{stock}', [RetailerController::class, 'updateStock']);
 Route::delete('/stock/{stock}', [RetailerController::class, 'deleteStock']);
+
+// Enhanced Stock Status routes
+Route::get('/stock-status', [StockStatusController::class, 'index']);
+Route::post('/stock-status/check', [StockStatusController::class, 'checkStock']);
