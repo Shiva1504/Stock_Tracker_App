@@ -36,6 +36,15 @@
                         class="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         required
                     >
+                    <input
+                        type="number"
+                        name="low_stock_threshold"
+                        placeholder="Low Stock Threshold"
+                        min="1"
+                        value="1"
+                        class="w-48 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                        required
+                    >
                     <button 
                         type="submit" 
                         class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -44,6 +53,9 @@
                     </button>
                 </div>
                 @error('name')
+                    <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
+                @enderror
+                @error('low_stock_threshold')
                     <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
                 @enderror
             </form>
@@ -143,6 +155,9 @@
                                     <span class="text-sm px-2 py-1 rounded font-medium {{ $product->inStock() ? 'bg-green-100 text-green-700 border border-green-300' : 'bg-red-100 text-red-700 border border-red-300' }}">
                                         @if($product->inStock())
                                             <i class="fas fa-check-circle mr-1"></i>In Stock
+                                            @if($product->isLowStock())
+                                                <span class="ml-2 px-2 py-1 bg-yellow-100 text-yellow-800 border border-yellow-300 rounded font-semibold">Low Stock</span>
+                                            @endif
                                         @else
                                             <i class="fas fa-times-circle mr-1"></i>Out of Stock
                                         @endif

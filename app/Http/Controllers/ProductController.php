@@ -21,11 +21,13 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|unique:products,name'
+            'name' => 'required|unique:products,name',
+            'low_stock_threshold' => 'required|integer|min:1',
         ]);
 
         Product::create([
-            'name' => $request->name
+            'name' => $request->name,
+            'low_stock_threshold' => $request->low_stock_threshold,
         ]);
 
         return redirect('/products')->with('success', 'Product added successfully!');

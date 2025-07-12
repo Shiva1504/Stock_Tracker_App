@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
+    protected $fillable = [
+        'name',
+        'low_stock_threshold',
+    ];
+
     public function inStock()
     {
         return $this->stock()->where('in_stock', true)->exists();
@@ -15,5 +20,15 @@ class Product extends Model
     public function stock()
     {
         return $this->hasMany(Stock::class);
+    }
+
+    public function isLowStock()
+    {
+        return $this->inStockCount() <= $this->low_stock_threshold;
+    }
+
+    public function inStockCount()
+    {
+        return $this->stock->where('in_stock', true)->count();
     }
 }
