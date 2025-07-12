@@ -14,6 +14,23 @@
             <a href="/" class="text-blue-500 hover:text-blue-600">← Back to Dashboard</a>
         </div>
 
+        <!-- Info Note -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-blue-800">Stock History Tracking</h3>
+                    <div class="mt-2 text-sm text-blue-700">
+                        <p>Stock history is automatically tracked when you add or update stock entries. Use the filters below to view specific trends, or click "History" on any stock entry to see detailed timeline.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Filters -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
             <h2 class="text-xl font-semibold mb-4">Filters</h2>

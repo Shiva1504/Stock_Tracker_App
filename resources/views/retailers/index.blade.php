@@ -193,6 +193,7 @@
                                                     <span class="text-sm px-2 py-1 rounded {{ $stock->in_stock ? 'bg-green-100 text-green-700 border border-green-300' : 'bg-red-100 text-red-700 border border-red-300' }}">
                                                         {{ $stock->in_stock ? 'In Stock' : 'Out of Stock' }}
                                                     </span>
+                                                    <a href="/stock-history/{{ $stock->id }}" class="text-orange-500 hover:text-orange-600 text-sm">History</a>
                                                     <a href="/stock/{{ $stock->id }}/edit" 
                                                        class="px-2 py-1 bg-yellow-500 text-white rounded text-xs hover:bg-yellow-600">
                                                         Edit
