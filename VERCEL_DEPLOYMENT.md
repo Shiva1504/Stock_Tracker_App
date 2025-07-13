@@ -1,96 +1,178 @@
-# 🚀 Deploy to Vercel
+# Vercel Deployment Guide for Stock Tracker App
 
-## 📋 **Prerequisites**
-- A GitHub account (free)
-- Your Stock Tracker App code
+## Current Status
+Your app is deployed at: https://stock-tracker-app-nine.vercel.app/
 
-## 🎯 **Step-by-Step Vercel Deployment**
+## Issue Identified
+The PHP code is being served as plain text instead of being executed. This is a common issue with Laravel on Vercel.
 
-### Step 1: Sign Up for Vercel
-1. Go to [vercel.com](https://vercel.com)
-2. Click **"Sign Up"**
-3. **Sign up with your GitHub account**
-4. Verify your email
+## Solution
 
-### Step 2: Deploy Your App
-1. **Click "New Project"**
-2. **Import your GitHub repository** (Stock_Tracker_App)
-3. **Vercel will automatically detect it's a PHP app**
-4. Click **"Deploy"**
+### 1. Update vercel.json Configuration
+The current configuration has been updated to use the PHP runtime:
 
-### Step 3: Configure Environment Variables
-After deployment, go to your project settings and add these environment variables:
-
-```env
-APP_ENV=production
-APP_DEBUG=false
-APP_URL=https://your-app-name.vercel.app
-APP_KEY=base64:your-generated-key-here
-DB_CONNECTION=sqlite
-CACHE_DRIVER=file
-SESSION_DRIVER=file
-QUEUE_CONNECTION=sync
-LOG_CHANNEL=stack
-LOG_LEVEL=error
-FILESYSTEM_DISK=local
-SESSION_SECURE_COOKIE=true
-SESSION_SAME_SITE=lax
-SESSION_HTTP_ONLY=true
+```json
+{
+  "version": 2,
+  "framework": null,
+  "builds": [
+    {
+      "src": "public/index.php",
+      "use": "@vercel/php"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/public/index.php"
+    }
+  ]
+}
 ```
 
-### Step 4: Generate Application Key
-1. Go to your project **"Settings"** → **"Environment Variables"**
-2. Add `APP_KEY` with a value like: `base64:your-generated-key-here`
-3. You can generate one by running locally: `php artisan key:generate --show`
+### 2. Required Environment Variables
+You need to set these environment variables in your Vercel dashboard:
 
-### Step 5: Database Setup
-For Vercel, we'll use **SQLite** (included) or you can connect an external database:
+#### Essential Variables:
+```
+APP_NAME=Stock Tracker App
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://stock-tracker-app-nine.vercel.app
+APP_KEY=base64:YOUR_32_CHARACTER_RANDOM_KEY
+```
 
-**Option A: SQLite (Recommended for Vercel)**
-- No additional setup needed
-- Database file will be created automatically
+#### Database Configuration (SQLite):
+```
+DB_CONNECTION=sqlite
+DB_DATABASE=/tmp/database.sqlite
+```
 
-**Option B: External Database**
-- Use a service like PlanetScale, Supabase, or Railway
-- Add the database URL to environment variables
+#### Cache and Session:
+```
+CACHE_STORE=database
+SESSION_DRIVER=database
+QUEUE_CONNECTION=database
+```
 
-## 🎉 **Your App Will Be Live!**
+#### Mail Configuration:
+```
+MAIL_MAILER=log
+MAIL_FROM_ADDRESS=noreply@yourdomain.com
+MAIL_FROM_NAME="Stock Tracker App"
+```
 
-After deployment, you'll get a URL like:
-`https://your-app-name.vercel.app`
+#### Logging:
+```
+LOG_CHANNEL=stack
+LOG_LEVEL=error
+```
 
-## 📊 **Vercel Free Tier Benefits**
-- ✅ **Unlimited deployments**
-- ✅ **Automatic HTTPS**
-- ✅ **Global CDN**
-- ✅ **Automatic scaling**
-- ✅ **No credit card required**
+### 3. Generate Application Key
+Run this command locally to generate a secure APP_KEY:
 
-## 🔧 **Vercel-Specific Optimizations**
+```bash
+php artisan key:generate --show
+```
 
-### File Structure
-- ✅ `vercel.json` - Vercel configuration
-- ✅ `public/index.php` - Entry point
-- ✅ `composer.json` - PHP dependencies
-- ✅ `package.json` - Node.js dependencies
+Copy the output and use it as your APP_KEY in Vercel.
 
-### Build Process
-Vercel will automatically:
-1. ✅ Install PHP 8.2
-2. ✅ Run `composer install`
-3. ✅ Build your app
-4. ✅ Deploy to global CDN
+### 4. Database Setup
+Since Vercel uses serverless functions, the database will be recreated on each request. For production, consider:
 
-## 🚀 **Next Steps After Deployment**
+#### Option A: Use External Database
+- Set up a free database on Railway, PlanetScale, or similar
+- Update DB_CONNECTION to mysql or pgsql
+- Add database credentials to environment variables
 
-1. **Test your app** - Visit the provided URL
-2. **Set up custom domain** (optional)
-3. **Configure email settings** for notifications
-4. **Set up monitoring** and analytics
+#### Option B: Use Vercel Storage
+- Vercel offers KV storage that can be used for simple data
+- Requires code modifications to use KV instead of SQLite
 
-## 💰 **Cost**
-**$0/month** - Completely free!
+### 5. Deploy Steps
 
----
+1. **Commit and push your changes:**
+   ```bash
+   git add .
+   git commit -m "Fix Vercel configuration for Laravel"
+   git push
+   ```
 
-**Ready to deploy?** Follow the steps above and your Stock Tracker App will be live on Vercel! 🚀 
+2. **Set Environment Variables in Vercel Dashboard:**
+   - Go to your project in Vercel dashboard
+   - Navigate to Settings > Environment Variables
+   - Add all the variables listed above
+
+3. **Redeploy:**
+   - Vercel will automatically redeploy when you push changes
+   - Or manually trigger a redeploy from the dashboard
+
+### 6. Post-Deployment Setup
+
+After successful deployment, you'll need to run migrations:
+
+```bash
+# Connect to Vercel function and run migrations
+vercel env pull .env.local
+php artisan migrate --force
+```
+
+### 7. Troubleshooting
+
+#### If PHP still shows as text:
+1. Check that `@vercel/php` is properly configured
+2. Ensure the build is successful in Vercel logs
+3. Try removing and re-adding the build configuration
+
+#### If database errors occur:
+1. Ensure SQLite database path is writable (`/tmp/`)
+2. Check that migrations have been run
+3. Verify database connection settings
+
+#### If environment variables aren't working:
+1. Check Vercel dashboard for correct variable names
+2. Ensure variables are set for production environment
+3. Redeploy after adding new variables
+
+### 8. Production Considerations
+
+#### Performance:
+- Vercel functions have cold starts
+- Consider using external database for better performance
+- Implement caching strategies
+
+#### Storage:
+- Vercel functions are stateless
+- Use external storage for file uploads
+- Consider CDN for static assets
+
+#### Monitoring:
+- Set up error tracking (Sentry, Bugsnag)
+- Monitor function execution times
+- Set up logging aggregation
+
+### 9. Alternative Deployment Options
+
+If Vercel continues to have issues, consider:
+
+1. **Railway** - Better Laravel support
+2. **Render** - Free tier with good PHP support
+3. **Heroku** - Traditional but reliable
+4. **DigitalOcean App Platform** - Good performance
+
+## Next Steps
+
+1. Update the vercel.json configuration
+2. Set environment variables in Vercel dashboard
+3. Generate and set APP_KEY
+4. Redeploy the application
+5. Test all functionality
+6. Set up monitoring and logging
+
+## Support
+
+If you encounter issues:
+1. Check Vercel function logs
+2. Verify environment variables
+3. Test locally with production settings
+4. Consider alternative deployment platforms 
