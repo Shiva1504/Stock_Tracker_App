@@ -25,10 +25,5 @@
     "SESSION_SECURE_COOKIE": "true",
     "SESSION_SAME_SITE": "lax",
     "SESSION_HTTP_ONLY": "true"
-  },
-  "functions": {
-    "public/index.php": {
-      "runtime": "vercel-php@0.6.0"
-    }
   }
 } 
