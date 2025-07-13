@@ -20,23 +20,20 @@ RUN docker-php-ext-install pdo pdo_mysql gd xml
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy composer files
-COPY composer.json composer.lock ./
+# Copy entire application first
+COPY . .
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Create .env file if it doesn't exist
+RUN cp .env.example .env || echo "APP_KEY=base64:placeholder" > .env
+
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Copy package files
-COPY package.json package-lock.json ./
-
 # Install Node.js dependencies
 RUN npm ci --only=production
-
-# Copy application code
-COPY . .
 
 # Build assets
 RUN npm run build
