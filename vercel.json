@@ -1,0 +1,34 @@
+{
+  "version": 2,
+  "framework": null,
+  "builds": [
+    {
+      "src": "public/index.php",
+      "use": "@vercel/php"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/public/index.php"
+    }
+  ],
+  "env": {
+    "APP_ENV": "production",
+    "APP_DEBUG": "false",
+    "CACHE_DRIVER": "file",
+    "SESSION_DRIVER": "file",
+    "QUEUE_CONNECTION": "sync",
+    "LOG_CHANNEL": "stack",
+    "LOG_LEVEL": "error",
+    "FILESYSTEM_DISK": "local",
+    "SESSION_SECURE_COOKIE": "true",
+    "SESSION_SAME_SITE": "lax",
+    "SESSION_HTTP_ONLY": "true"
+  },
+  "functions": {
+    "public/index.php": {
+      "runtime": "vercel-php@0.6.0"
+    }
+  }
+} 
