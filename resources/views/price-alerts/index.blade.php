@@ -8,14 +8,24 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="bg-gray-100">
-    <div class="container mx-auto px-4 py-8">
-        <div class="flex items-center justify-between mb-8">
+    <div class="container mx-auto px-4 py-4 lg:py-8">
+        <!-- Mobile Header -->
+        <div class="flex items-center justify-between mb-6 lg:hidden">
+            <a href="/" class="text-gray-600 hover:text-gray-800">
+                <i class="fas fa-arrow-left text-xl"></i>
+            </a>
+            <h1 class="text-xl font-bold text-gray-900">Price Alerts</h1>
+            <div class="w-8"></div> <!-- Spacer for centering -->
+        </div>
+
+        <!-- Desktop Header -->
+        <div class="hidden lg:flex items-center justify-between mb-8">
             <h1 class="text-3xl font-bold text-gray-900">Price Alerts</h1>
             <a href="/" class="text-blue-500 hover:text-blue-600">← Back to Dashboard</a>
         </div>
 
         <!-- Info Note -->
-        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 lg:mb-8">
             <div class="flex">
                 <div class="flex-shrink-0">
                     <svg class="h-5 w-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -32,8 +42,8 @@
         </div>
 
         <!-- Create New Alert -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 class="text-xl font-semibold mb-4">Create New Price Alert</h2>
+        <div class="bg-white rounded-lg shadow-md p-4 lg:p-6 mb-6 lg:mb-8">
+            <h2 class="text-lg lg:text-xl font-semibold mb-4">Create New Price Alert</h2>
             
             @if(session('error'))
                 <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
@@ -49,7 +59,7 @@
 
             <form action="/price-alerts" method="POST" class="space-y-4">
                 @csrf
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <div>
                         <label for="product_id" class="block text-sm font-medium text-gray-700 mb-2">Product</label>
                         <select name="product_id" id="product_id" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
@@ -81,20 +91,67 @@
                     </div>
                 </div>
 
-                <button type="submit" class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    Create Alert
+                <button type="submit" class="w-full lg:w-auto px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <i class="fas fa-plus mr-1"></i>Create Alert
                 </button>
             </form>
         </div>
 
         <!-- Existing Alerts -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-xl font-semibold mb-4">Your Price Alerts</h2>
+        <div class="bg-white rounded-lg shadow-md p-4 lg:p-6">
+            <h2 class="text-lg lg:text-xl font-semibold mb-4">Your Price Alerts</h2>
             
             @if($priceAlerts->count() > 0)
                 <div class="space-y-4">
                     @foreach($priceAlerts as $alert)
-                        <div class="border border-gray-200 rounded-lg p-4 {{ $alert->is_active ? 'bg-green-50' : 'bg-gray-50' }}">
+                        <!-- Mobile Alert Layout -->
+                        <div class="lg:hidden border border-gray-200 rounded-lg p-4 {{ $alert->is_active ? 'bg-green-50' : 'bg-gray-50' }}">
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="font-medium text-gray-900 text-sm lg:text-base truncate">{{ $alert->product->name }}</h3>
+                                    <span class="px-2 py-1 text-xs rounded-full {{ $alert->is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700' }}">
+                                        {{ $alert->is_active ? 'Active' : 'Inactive' }}
+                                    </span>
+                                </div>
+                                <div class="text-sm text-gray-600">
+                                    Target Price: <span class="font-medium">₹{{ number_format($alert->target_price_in_rupees, 2) }}</span>
+                                </div>
+                                <div class="text-xs text-gray-500">
+                                    Created: {{ $alert->created_at->format('M j, Y g:i A') }}
+                                </div>
+                                @if($alert->last_triggered_at)
+                                    <div class="text-xs text-orange-600">
+                                        Last triggered: {{ $alert->last_triggered_at->format('M j, Y g:i A') }}
+                                    </div>
+                                @endif
+                                <div class="flex gap-2 pt-2">
+                                    <form action="/price-alerts/{{ $alert->id }}/toggle" method="POST" class="flex-1">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="submit" class="w-full px-3 py-2 text-sm rounded {{ $alert->is_active ? 'bg-yellow-500 text-white hover:bg-yellow-600' : 'bg-green-500 text-white hover:bg-green-600' }}">
+                                            {{ $alert->is_active ? 'Deactivate' : 'Activate' }}
+                                        </button>
+                                    </form>
+                                    
+                                    <button onclick="editAlert({{ $alert->id }}, '{{ $alert->product->name }}', {{ $alert->target_price_in_rupees }}, '{{ $alert->is_active ? 1 : 0 }}')" 
+                                            class="flex-1 px-3 py-2 bg-blue-500 text-white rounded text-sm hover:bg-blue-600">
+                                        Edit
+                                    </button>
+                                    
+                                    <form action="/price-alerts/{{ $alert->id }}" method="POST" class="flex-1" 
+                                          onsubmit="return confirm('Are you sure you want to delete this price alert?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="w-full px-3 py-2 bg-red-500 text-white rounded text-sm hover:bg-red-600">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Desktop Alert Layout -->
+                        <div class="hidden lg:block border border-gray-200 rounded-lg p-4 {{ $alert->is_active ? 'bg-green-50' : 'bg-gray-50' }}">
                             <div class="flex items-center justify-between">
                                 <div class="flex-1">
                                     <div class="flex items-center gap-3">
@@ -146,7 +203,7 @@
             @else
                 <div class="text-center py-8">
                     <i class="fas fa-bell text-gray-400 text-4xl mb-4"></i>
-                    <p class="text-gray-500">No price alerts set up yet.</p>
+                    <p class="text-gray-500 text-sm lg:text-base">No price alerts set up yet.</p>
                     <p class="text-sm text-gray-400 mt-2">Create your first price alert above to get started.</p>
                 </div>
             @endif
@@ -154,8 +211,8 @@
     </div>
 
     <!-- Edit Modal -->
-    <div id="editModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center">
-        <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+    <div id="editModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-4 lg:p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
             <h3 class="text-lg font-semibold mb-4">Edit Price Alert</h3>
             <form id="editForm" method="POST" class="space-y-4">
                 @csrf
@@ -163,7 +220,7 @@
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Product</label>
-                    <p id="editProductName" class="text-gray-900 font-medium"></p>
+                    <p id="editProductName" class="text-gray-900 font-medium text-sm lg:text-base"></p>
                 </div>
                 
                 <div>
@@ -184,7 +241,7 @@
                     <label for="editIsActive" class="text-sm text-gray-700">Active</label>
                 </div>
                 
-                <div class="flex gap-3">
+                <div class="flex flex-col sm:flex-row gap-3">
                     <button type="submit" class="flex-1 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
                         Update Alert
                     </button>
@@ -200,20 +257,30 @@
         function editAlert(alertId, productName, targetPrice, isActive) {
             document.getElementById('editProductName').textContent = productName;
             document.getElementById('editTargetPrice').value = targetPrice;
-            document.getElementById('editIsActive').checked = isActive === '1';
+            document.getElementById('editIsActive').checked = isActive == 1;
             document.getElementById('editForm').action = `/price-alerts/${alertId}`;
-            document.getElementById('editModal').classList.remove('hidden');
-            document.getElementById('editModal').classList.add('flex');
+            
+            const modal = document.getElementById('editModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         }
 
         function closeEditModal() {
-            document.getElementById('editModal').classList.add('hidden');
-            document.getElementById('editModal').classList.remove('flex');
+            const modal = document.getElementById('editModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
         }
 
         // Close modal when clicking outside
         document.getElementById('editModal').addEventListener('click', function(e) {
             if (e.target === this) {
+                closeEditModal();
+            }
+        });
+
+        // Close modal on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
                 closeEditModal();
             }
         });
