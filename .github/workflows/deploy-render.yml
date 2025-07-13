@@ -1,0 +1,31 @@
+name: Deploy to Render
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, dom, filter, gd, iconv, json, mbstring, pdo, session, tokenizer, xml, ctype, fileinfo, openssl
+        
+    - name: Install Composer dependencies
+      run: composer install --prefer-dist --no-interaction --no-progress
+        
+    - name: Install Node.js dependencies
+      run: npm ci
+        
+    - name: Build assets
+      run: npm run build
+        
+    - name: Deploy to Render
+      run: |
+        curl -X POST "https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}" 
