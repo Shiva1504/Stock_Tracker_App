@@ -1,5 +1,5 @@
 # Multi-stage build for production optimization
-FROM php:8.1-fpm-alpine AS base
+FROM php:8.2-fpm-alpine AS base
 
 # Install system dependencies
 RUN apk add --no-cache \
@@ -51,7 +51,7 @@ RUN chown -R www-data:www-data /var/www/html \
 RUN php artisan storage:link
 
 # Production stage
-FROM php:8.1-fpm-alpine AS production
+FROM php:8.2-fpm-alpine AS production
 
 # Install production dependencies only
 RUN apk add --no-cache \
