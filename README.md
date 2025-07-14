@@ -31,7 +31,7 @@ A Laravel-based application for tracking product stock across multiple retailers
 
 1. **Clone the repository**
    ```bash
-   git clone <your-repo-url>
+   git clone https://github.com/Shiva1504/Stock_Tracker_App.git
    cd Stock_Tracker_App
    ```
 
